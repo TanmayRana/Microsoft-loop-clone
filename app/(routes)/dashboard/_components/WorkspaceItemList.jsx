@@ -45,6 +45,8 @@ const WorkspaceItemList = ({ workspaceList }) => {
   const router = useRouter();
 
   const handleClickWorkspaceItem = (workspaceId) => {
+    console.log("Clicked workspace ID:", workspaceId);
+
     router.push("/workspace/" + workspaceId);
   };
 

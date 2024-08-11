@@ -10,15 +10,11 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/config/firebaseConfig";
 
 export function Room({ children, params }) {
-  if (!params?.documentid) {
-    // Handle missing document ID
-    console.error("Document ID is missing!");
-    return <div>Error: Document ID is required</div>;
-  }
+  console.log(params?.documentid);
 
   return (
     <LiveblocksProvider
-      authEndpoint={`/api/liveblocks-auth?roomId=${params.documentid}`}
+      authEndpoint={"/api/liveblocks-auth?roomId=" + params?.documentid}
       resolveUsers={async ({ userIds }) => {
         const q = query(
           collection(db, "LoopUsers"),
@@ -45,16 +41,16 @@ export function Room({ children, params }) {
         console.log(userList);
 
         if (text) {
-          userList = userList.filter((user) =>
-            user.name.toLowerCase().includes(text.toLowerCase())
-          );
+          // Filter any way you'd like, e.g. checking if the name matches
+          userList = userList.filter((user) => user.name.includes(text));
         }
         console.log(userList.map((user) => user.email));
 
+        // Return a list of user IDs that match the query
         return userList.map((user) => user.email);
       }}
     >
-      <RoomProvider id={params?.documentid}>
+      <RoomProvider id={params?.documentid ? params?.documentid : "1"}>
         <ClientSideSuspense fallback={<div>Loading…</div>}>
           {children}
         </ClientSideSuspense>
@@ -62,6 +58,3 @@ export function Room({ children, params }) {
     </LiveblocksProvider>
   );
 }
-
-// Usage example:
-// Ensure this Room component is used in a place where `params.documentid` is correctly passed down.
